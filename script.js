@@ -13,6 +13,8 @@ async function displayPageCount() {
   const numPages = pdfDoc.getPageCount();
 
   document.getElementById('page-count').textContent = `Total Pages: ${numPages}`;
+  document.getElementById('page-ranges').value = `1-${numPages}`;
+    document.getElementById('page-count').focus();
 }
 
 async function splitPdf() {
@@ -42,32 +44,64 @@ async function splitPdf() {
     const [originalPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
     if (pagesToSplit.includes(i + 1)) {
       const { width, height } = originalPage.getSize();
-      const leftPage = newPdfDoc.addPage([width / 2, height]);
-      const rightPage = newPdfDoc.addPage([width / 2, height]);
 
-      const embeddedPage = await newPdfDoc.embedPage(originalPage);
+      if (height > width) {
+        // Split top and bottom
+        const topPage = newPdfDoc.addPage([width, height / 2]);
+        const bottomPage = newPdfDoc.addPage([width, height / 2]);
 
-      // Draw left half
-      leftPage.drawPage(embeddedPage, {
-        x: 0,
-        y: 0,
-        scale: 1,
-        width: width,
-        height: height,
-        xScale: 0.5,
-        yScale: 1
-      });
+        const embeddedPage = await newPdfDoc.embedPage(originalPage);
 
-      // Draw right half
-      rightPage.drawPage(embeddedPage, {
-        x: -width / 2,
-        y: 0,
-        scale: 1,
-        width: width,
-        height: height,
-        xScale: 0.5,
-        yScale: 1
-      });
+        // Draw top half
+        topPage.drawPage(embeddedPage, {
+          x: 0,
+          y: -height / 2,
+          scale: 1,
+          width: width,
+          height: height,
+          xScale: 1,
+          yScale: 0.5
+        });
+
+        // Draw bottom half
+        bottomPage.drawPage(embeddedPage, {
+          x: 0,
+          y: 0,
+          scale: 1,
+          width: width,
+          height: height,
+          xScale: 1,
+          yScale: 0.5
+        });
+      } else {
+        // Split left and right
+        const leftPage = newPdfDoc.addPage([width / 2, height]);
+        const rightPage = newPdfDoc.addPage([width / 2, height]);
+
+        const embeddedPage = await newPdfDoc.embedPage(originalPage);
+
+        // Draw left half
+        leftPage.drawPage(embeddedPage, {
+          x: 0,
+          y: 0,
+          scale: 1,
+          width: width,
+          height: height,
+          xScale: 0.5,
+          yScale: 1
+        });
+
+        // Draw right half
+        rightPage.drawPage(embeddedPage, {
+          x: -width / 2,
+          y: 0,
+          scale: 1,
+          width: width,
+          height: height,
+          xScale: 0.5,
+          yScale: 1
+        });
+      }
     } else {
       newPdfDoc.addPage(originalPage);
     }
@@ -82,7 +116,6 @@ async function splitPdf() {
   const blob = new Blob([newPdfBytes], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
   window.open(url, '_blank');
-
 
   // Hide progress bar after completion
   progressContainer.style.display = 'none';
