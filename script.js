@@ -1,10 +1,5 @@
 document.getElementById('pdf-upload').addEventListener('change', displayPageCount);
 document.getElementById('split-button').addEventListener('click', splitPdf);
-document.getElementById('page-ranges').addEventListener('keypress', function(event) {
-  if (event.key === 'Enter') {
-    splitPdf();
-  }
-});
 
 async function displayPageCount() {
   const pdfFile = document.getElementById('pdf-upload').files[0];
@@ -19,7 +14,7 @@ async function displayPageCount() {
 
   document.getElementById('page-count').textContent = `Total Pages: ${numPages}`;
   document.getElementById('page-ranges').value = `1-${numPages}`;
-  document.getElementById('page-ranges').focus();
+  document.getElementById('page-count').focus();
 }
 
 async function splitPdf() {
@@ -28,7 +23,7 @@ async function splitPdf() {
   const progressContainer = document.getElementById('progress-container');
   const progressBar = document.getElementById('progress-bar');
   const progressPercentage = document.getElementById('progress-percentage');
-  const extendedMode = document.getElementById('split-mode-switch').checked;
+  const extendedMode = document.getElementById('mode-switch').checked;
 
   if (!pdfFile) {
     alert('Please upload a PDF file.');
@@ -50,40 +45,40 @@ async function splitPdf() {
     const [originalPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
     if (pagesToSplit.includes(i + 1)) {
       const { width, height } = originalPage.getSize();
-      const splitOffset = extendedMode ? Math.max(width, height) * 0.1 : 0;
+      const extension = extendedMode ? Math.max(width, height) * 0.05 : 0;
 
       if (height > width) {
-        // Split top and bottom
-        const topPage = newPdfDoc.addPage([width, (height + splitOffset) / 2]);
-        const bottomPage = newPdfDoc.addPage([width, (height + splitOffset) / 2]);
+        // Split top and bottom with optional extension
+        const topPage = newPdfDoc.addPage([width, height / 2 + extension]);
+        const bottomPage = newPdfDoc.addPage([width, height / 2 + extension]);
 
         const embeddedPage = await newPdfDoc.embedPage(originalPage);
 
         // Draw top half
         topPage.drawPage(embeddedPage, {
           x: 0,
-          y: -(height / 2 + splitOffset),
+          y: -height / 2,
           scale: 1,
           width: width,
           height: height,
           xScale: 1,
-          yScale: 0.5
+          yScale: 0.5 + extension / height
         });
 
         // Draw bottom half
         bottomPage.drawPage(embeddedPage, {
           x: 0,
-          y: -splitOffset,
+          y: -(height / 2 - extension),
           scale: 1,
           width: width,
           height: height,
           xScale: 1,
-          yScale: 0.5
+          yScale: 0.5 + extension / height
         });
       } else {
-        // Split left and right
-        const leftPage = newPdfDoc.addPage([(width + splitOffset) / 2, height]);
-        const rightPage = newPdfDoc.addPage([(width + splitOffset) / 2, height]);
+        // Split left and right with optional extension
+        const leftPage = newPdfDoc.addPage([width / 2 + extension, height]);
+        const rightPage = newPdfDoc.addPage([width / 2 + extension, height]);
 
         const embeddedPage = await newPdfDoc.embedPage(originalPage);
 
@@ -94,18 +89,18 @@ async function splitPdf() {
           scale: 1,
           width: width,
           height: height,
-          xScale: 0.5,
+          xScale: 0.5 + extension / width,
           yScale: 1
         });
 
         // Draw right half
         rightPage.drawPage(embeddedPage, {
-          x: -(width / 2 + splitOffset),
+          x: -(width / 2 - extension),
           y: 0,
           scale: 1,
           width: width,
           height: height,
-          xScale: 0.5,
+          xScale: 0.5 + extension / width,
           yScale: 1
         });
       }
