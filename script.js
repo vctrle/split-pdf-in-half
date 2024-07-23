@@ -30,6 +30,8 @@ async function splitPdf() {
 		return;
 	}
 
+	const originalFileName = pdfFile.name.replace(/\.pdf$/i, ''); // Remove .pdf extension
+
 	progressContainer.style.display = 'flex';
 	progressBar.value = 0;
 	progressPercentage.textContent = '0%';
@@ -114,7 +116,7 @@ async function splitPdf() {
 	document.getElementById('result-pdf').src = url;
 	const downloadLink = document.getElementById('download-link');
 	downloadLink.href = url;
-	downloadLink.download = 'split.pdf';
+	downloadLink.download = `${originalFileName}_split.pdf`; // Keep original name with '_split'
 	downloadLink.style.display = 'inline';
 
 	// Hide progress bar after completion
@@ -143,4 +145,3 @@ function parsePageRanges(ranges, numPages) {
 
 	return Array.from(pages).sort((a, b) => a - b);
 }
-
