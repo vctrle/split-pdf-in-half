@@ -1,30 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Split PDF in half</title>
-  <link rel="stylesheet" href="styles.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Split PDF in Half</title>
+	<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Split PDF in half</h1>
-    <input type="file" id="pdf-upload" accept="application/pdf">
-    <p id="page-count"></p>
-    <label for="page-ranges">Enter pages to split:</label>
-    <input type="text" id="page-ranges" placeholder="e.g. 2, 4, 6-70" onkeydown="if(event.key === 'Enter') splitPdf()">
-    <div>
-      <label for="mode-switch">5% Extended Split Mode</label>
-      <input type="checkbox" id="mode-switch">
-    </div>
-    <button id="split-button">Split PDF</button>
-    <div id="progress-container" class="progress-container">
-      <progress id="progress-bar" value="0" max="100"></progress>
-      <span id="progress-percentage">0%</span>
-    </div>
-    <a id="download-link" style="display: none;"></a>
-  </div>
-  <script src="https://unpkg.com/pdf-lib@1.11.1"></script>
-  <script src="script.js"></script>
+	<div class="container">
+		<h1>Split PDF in Half</h1>
+		<input type="file" id="pdf-upload" accept="application/pdf">
+		<p id="page-count"></p>
+		<label for="page-ranges">Enter pages to split:</label>
+		<input type="text" id="page-ranges" placeholder="e.g. 2, 4, 6-70">
+		<div>
+			<label for="mode-switch">5% Extended Split Mode</label> <input type="checkbox" id="mode-switch">
+		</div>
+		<button id="split-button">Split PDF</button>
+		<div id="progress-container" class="progress-container">
+			<progress id="progress-bar" value="0" max="100"></progress>
+			<span id="progress-percentage">0%</span>
+		</div>
+	</div>
+	<br>
+	<div id="result-container" style="display: none;">
+		<h2>Result</h2>
+		<a id="download-link" style="display: none;">Download PDF</a>
+		<iframe id="result-pdf" width="90%" height="600px"></iframe>
+	</div>
+	<script src="https://unpkg.com/pdf-lib@1.11.1"></script>
+	<script src="script.js"></script>
 </body>
 </html>
