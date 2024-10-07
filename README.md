@@ -1,1 +1,3 @@
-![image](https://github.com/user-attachments/assets/e0807d9f-3ca6-4723-93fc-ee7d4c1aad20)
+Split PDF file down the middle of the page. Optionally apply counterclockwise rotation and 5% overlap.
+
+`pip install PyMuPDF Pillow PyPDF2`
